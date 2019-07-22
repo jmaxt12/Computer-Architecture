@@ -1,3 +1,6 @@
+# This is where the main processing is happening
+#Place where instructions are processes
+
 """CPU functionality."""
 
 import sys
@@ -7,7 +10,12 @@ class CPU:
 
     def __init__(self):
         """Construct a new CPU."""
-        pass
+        self.ram = [None] * 256,
+        self.reg = [0] * 8 #8 registers
+
+    def __str__(self):
+        return f'{self.ram}, {self.reg}'
+        # print(CPU.ram)
 
     def load(self):
         """Load a program into memory."""
@@ -63,3 +71,7 @@ class CPU:
     def run(self):
         """Run the CPU."""
         pass
+
+cpu = CPU()
+
+print(cpu)

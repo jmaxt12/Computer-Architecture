@@ -1,3 +1,5 @@
+# This file is running eveything from within
+
 #!/usr/bin/env python3
 
 """Main."""
