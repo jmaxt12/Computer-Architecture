@@ -9,6 +9,8 @@ SAVE_REGISTER   = 4
 PRINT_REGISTER  = 5
 PUSH            = 6
 POP             = 7
+CALL            = 8
+RET             = 9
 memory = [0] * 128
 register = [0] * 8  # 8 register
 SP = 7
@@ -72,7 +74,28 @@ while (running):
         register[regnum] = value        # Store the value from the stack in the register
         register[SP] += 1               # Increment the stack pointer
         pc += 2
+
+    elif command == CALL:
+        #get address of instruction right after the CALL inst
+        return_addr = pc + 2
+
+        #push return address on stack
+        register[SP] -= 1   #decrement the stack pointer
+        memory[register[SP]] = return_addr  #store that value in memory at the SP
         
+        # set the PC to the subroutine addr
+        regnum = memory[pc+ 1]
+        subroutine_addr = register[regnum]
+        pc = subroutine_addr
+
+    elif command == RET:
+        # pop the return address off the stack
+        return_addr = memory[register[SP]]
+        register[SP] += 1
+
+        pc =return_addr
+
+
     elif command == HALT:
         running = False
         pc += 1     
