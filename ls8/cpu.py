@@ -8,6 +8,9 @@ HLT = 0b00000001
 MUL = 0b10100010
 PUSH = 0b01000101
 POP = 0b01000110
+CALL = 0b01010000
+RET = 0b0010001
+ADD = 0b10100000
 
 class CPU:
     """Main CPU class."""
@@ -140,6 +143,31 @@ class CPU:
                 regnum = self.ram[self.pc + 1]
                 self.reg[regnum] = value
                 self.reg[self.SP] += 1
+
+            elif command == CALL:
+                #get address of instruction right after the CALL inst
+                return_addr = self.pc + 2
+
+                #push return address on stack
+                self.reg[self.SP] -= 1   #decrement the stack pointer
+                self.ram[self.reg[self.SP]] = return_addr  #store that value in memory at the SP
+                
+                # set the memory to the subroutine addr
+                self.pc = self.reg[operand_a] - num_of_ops
+                    # regnum = self.ram[self.pc+ 1]
+                    # subroutine_addr = self.reg[regnum]
+                    # self.pc = subroutine_addr
+
+            elif command == RET:
+                # pop the return address off the stack
+                return_addr = self.ram[self.reg[self.SP]]
+                self.reg[self.SP] += 1
+
+                self.pc =return_addr - 1
+
+            elif command == ADD:
+                self.reg[operand_a] = self.reg[operand_a] + self.reg[operand_b]
+
                 
             else: 
                 print(f"unknown instruction: {command}")
