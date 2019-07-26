@@ -11,6 +11,10 @@ POP = 0b01000110
 CALL = 0b01010000
 RET = 0b0010001
 ADD = 0b10100000
+CMP = 0b10100111
+JMP = 0b01010100
+JEQ = 0b01010101
+JNE = 0b01010110
 
 class CPU:
     """Main CPU class."""
@@ -20,13 +24,14 @@ class CPU:
         self.reg = [0] * 8
         self.pc = 0
         self.SP = 7
-        self.branch_table = {}
-        self.branch_table[LDI] = self.handle_LDI
-        self.branch_table[PRN] = self.handle_PRN
-        self.branch_table[HLT] = self.handle_HLT
-        self.branch_table[MUL] = self.handle_MUL
-        self.branch_table[PUSH] = self.handle_PUSH
-        self.branch_table[POP] = self.handle_POP
+        # self.branch_table = {}
+        # self.branch_table[LDI] = self.handle_LDI
+        # self.branch_table[PRN] = self.handle_PRN
+        # self.branch_table[HLT] = self.handle_HLT
+        # self.branch_table[MUL] = self.handle_MUL
+        # self.branch_table[PUSH] = self.handle_PUSH
+        # self.branch_table[POP] = self.handle_POP
+        self.FL = 0b000
         
     def __str__(self):
         return f"RAM: {self.ram}, REGISTER: {self.reg}, PC: {self.pc}"
@@ -121,11 +126,12 @@ class CPU:
             operand_b = self.ram_read(self.pc + 2)
                 
             if command == LDI:
+                #print("LDI")
                 self.reg[operand_a] = operand_b
 
             elif command == PRN: 
                 print(self.reg[operand_a])
-               
+
             elif command == HLT: 
                 running = False
                 
@@ -163,10 +169,44 @@ class CPU:
                 return_addr = self.ram[self.reg[self.SP]]
                 self.reg[self.SP] += 1
 
-                self.pc =return_addr - 1
+                self.pc = return_addr - 1
 
             elif command == ADD:
                 self.reg[operand_a] = self.reg[operand_a] + self.reg[operand_b]
+
+            elif command == CMP:
+                #print(f"CMP opA{self.reg[operand_a]} opB{self.reg[operand_b]} ")
+                #print('flaggggggg before', bin(self.FL))
+                if self.reg[operand_a] == self.reg[operand_b]:
+                    self.FL = 0b001
+                    
+                elif self.reg[operand_a] < self.reg[operand_b]:
+                    self.FL = 0b100
+
+                elif self.reg[operand_a] > self.reg[operand_b]:
+                    self.FL = 0b010
+                #print('flaggggggg', bin(self.FL))
+                #print(self.reg[2])
+                
+
+            elif command == JMP:
+                #print("JMP")
+                self.pc = self.reg[operand_a] 
+
+            elif command == JEQ:
+                #print("JEQ")
+                if self.FL == 0b001:
+                    self.pc = self.reg[operand_a]
+                # else:
+                #     self.pc += 2
+
+            elif command == JNE:
+                #print("JNE")
+                if self.FL != 0b001:
+                    self.pc = self.reg[operand_a]
+                # else:
+                #     self.pc += 2
+             
 
                 
             else: 
@@ -174,3 +214,18 @@ class CPU:
                 sys.exit(1)
                 
             self.pc += num_of_ops
+
+           # print(self.pc)
+
+
+
+            # R0 - 10
+            # R1 - 10
+            # R2 - TEST4
+            # R3 - 1
+
+            # FL - 0b001
+
+            # PRINT - 1,
+
+
